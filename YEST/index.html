@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>QuickOrder - Menu</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #00bfff 0%, #00ff2a 100%);
+            color: #fff;
+        }
+        .item { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.3); padding-bottom: 5px; }
+        button { background: #a74e28; color: rgb(255, 255, 255); border: none; padding: 10px 20px; cursor: pointer; width: 100%; border-radius: 5px; }
+        button:hover { background: #218838; }
+    </style>
+</head>
+<body>
+    <h1>Restaurant Menu</h1>
+    <form action="payment.html">
+        <div class="item">
+            <label><input type="checkbox" name="item" value="12"> Classic Burger</label>
+            <span>$12.00</span>
+        </div>
+        <div class="item">
+            <label><input type="checkbox" name="item" value="8"> Garden Salad</label>
+            <span>$8.00</span>
+        </div>
+        <div class="item">
+            <label><input type="checkbox" name="item" value="4"> Soda</label>
+            <span>$4.00</span>
+        </div>
+        <div class="item">
+            <label><input type="checkbox" name="item" value="6"> Fries</label>
+            <span>$6.00</span>
+        </div>
+        <hr>
+        <button type="submit">Proceed to Payment</button>
+    </form>
+</body>
+</html>

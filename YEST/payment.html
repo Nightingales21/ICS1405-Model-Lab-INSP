@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Secure Checkout</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #007bff 0%,#28a745 50% #ff7a00 100%);
+            color: #fff;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        label {
+            display: block;   /* Forces the label onto its own line above the input */
+            margin-top: 10px;
+        }
+
+        input {
+            width: 100%;      /* Makes the input fill the container */
+            box-sizing: border-box; /* Crucial: includes padding/border in the width */
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.6);
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+
+        .row {
+            display: flex;    /* Puts the Expiry and CVV side-by-side */
+            gap: 10px;        /* Adds space between those side-by-side items */
+        }
+    </style>
+</head>
+<body>
+    <h2>Card Payment</h2>
+    <form onsubmit="alert('Payment Successful!'); return false;">
+        <label>Cardholder Name</label>
+        <input type="text" placeholder="Jane Doe" required>
+
+        <label>Card Number</label>
+        <input type="text" placeholder="1234 5678 9101 1121" maxlength="16" required>
+
+        <div class="row">
+            <div style="flex: 2;">
+                <label>Expiry Date</label>
+                <input type="text" placeholder="MM/YY" maxlength="5" required>
+            </div>
+            <div style="flex: 1;">
+                <label>CVV</label>
+                <input type="password" placeholder="123" maxlength="3" required>
+            </div>
+            <div style="flex: 1;">
+                <label>password</label>
+                <input type="password" placeholder="12345" required>
+            </div>
+        </div>
+
+        <button type="submit">Pay Now</button>
+    </form>
+    <p style="text-align: center;"><a href="index.html" style="color: #666; font-size: 0.9em;">Cancel and go back</a></p>
+</body>
+</html>
