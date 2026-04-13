@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookStore - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>📚 Admin Panel</h1>
+        <span onclick="logout()">Logout</span>
+    </nav>
+    <div class="page active">
+        <div class="card">
+            <h2>📦 Book Inventory</h2>
+            <table>
+                <thead><tr><th>Title</th><th>Stock</th><th>Price</th></tr></thead>
+                <tbody id="adminTable"></tbody>
+            </table>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script>
+        function render() {
+            document.getElementById('adminTable').innerHTML = books.map(b => `
+                <tr><td>${b.title}</td><td>${b.stock}</td><td>₹${b.price}</td></tr>
+            `).join('');
+        }
+        render();
+    </script>
+</body>
+</html>
