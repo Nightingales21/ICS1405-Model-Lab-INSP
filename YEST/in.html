@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BookStore - Online Book Buying System</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #2d3748; }
+
+  /* NAV */
+  nav { background: #2b6cb0; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+  nav h1 { font-size: 1.4rem; }
+  nav span { font-size: 0.9rem; cursor: pointer; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; }
+
+  /* PAGES */
+  .page { display: none; padding: 40px 20px; max-width: 900px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* CARDS */
+  .card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .card h2 { margin-bottom: 20px; color: #2b6cb0; }
+
+  /* FORM */
+  label { display: block; margin: 12px 0 4px; font-weight: 600; font-size: 0.9rem; }
+  input, select { width: 100%; padding: 10px 14px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; transition: border 0.2s; }
+  input:focus, select:focus { outline: none; border-color: #2b6cb0; }
+  .btn { display: inline-block; padding: 10px 24px; background: #2b6cb0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-top: 14px; }
+  .btn:hover { background: #2c5282; }
+  .btn-danger { background: #e53e3e; }
+  .btn-danger:hover { background: #c53030; }
+  .btn-green { background: #38a169; }
+  .btn-green:hover { background: #276749; }
+  .btn-sm { padding: 6px 14px; font-size: 0.82rem; margin-top: 0; }
+
+  /* ALERTS */
+  .alert { padding: 10px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; }
+  .alert-error { background: #fed7d7; color: #c53030; }
+  .alert-success { background: #c6f6d5; color: #276749; }
+
+  /* TIMER */
+  .timer-bar { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  #timerDisplay { font-weight: 700; color: #2b6cb0; font-size: 1.1rem; }
+  #timerDisplay.warning { color: #e53e3e; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab { padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #e2e8f0; color: #4a5568; }
+  .tab.active { background: #2b6cb0; color: white; }
+
+  /* BOOKS GRID */
+  .books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+  .book-card { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+  .book-card h4 { color: #2b6cb0; margin-bottom: 4px; font-size: 0.95rem; }
+  .book-card p { font-size: 0.82rem; color: #718096; margin-bottom: 4px; }
+  .book-card .price { font-weight: 700; color: #276749; font-size: 1rem; }
+  .book-card .actions { display: flex; gap: 6px; margin-top: 10px; }
+
+  /* SEARCH */
+  .search-row { display: flex; gap: 10px; margin-bottom: 20px; }
+  .search-row input { flex: 1; margin: 0; }
+
+  /* CART */
+  .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+  .cart-total { font-size: 1.2rem; font-weight: 700; margin: 16px 0; }
+
+  /* BILL */
+  .bill-box { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 20px; }
+  .bill-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.93rem; }
+  .bill-row.total { font-weight: 700; font-size: 1.1rem; border-bottom: none; padding-top: 12px; color: #2b6cb0; }
+
+  /* LOGIN ROLE SELECTOR */
+  .role-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: 8px; overflow: hidden; border: 1.5px solid #2b6cb0; }
+  .role-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; color: #2b6cb0; background: white; }
+  .role-tab.active { background: #2b6cb0; color: white; }
+
+  .attempts-info { font-size: 0.85rem; color: #718096; margin-top: 8px; }
+  
+  table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+  th { background: #ebf8ff; color: #2b6cb0; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<nav>
+  <h1>📚 BookStore</h1>
+  <span id="navUser" onclick="logout()" style="display:none"></span>
+</nav>
+
+<!-- =================== LOGIN PAGE =================== -->
+<div class="page active" id="loginPage">
+  <div class="card" style="max-width:420px;margin:0 auto;">
+    <h2>🔐 Sign In</h2>
+    <div class="role-tabs">
+      <div class="role-tab active" id="roleUser" onclick="setRole('user')">👤 User</div>
+      <div class="role-tab" id="roleAdmin" onclick="setRole('admin')">🛠 Admin</div>
+    </div>
+    <div id="loginAlert"></div>
+    <label>Username</label>
+    <input type="text" id="loginUser" placeholder="Enter username" />
+    <label>Password</label>
+    <input type="password" id="loginPass" placeholder="Enter password" />
+    <p class="attempts-info" id="attemptsInfo">3 attempts remaining</p>
+    <button class="btn" onclick="doLogin()">Login</button>
+    <p style="margin-top:16px;font-size:0.82rem;color:#718096;">
+      Demo — User: <b>user / user123</b> &nbsp;|&nbsp; Admin: <b>admin / admin123</b>
+    </p>
+  </div>
+</div>
+
+<!-- =================== USER PAGE =================== -->
+<div class="page" id="userPage">
+  <div class="timer-bar">
+    <span>⏱ Session Timer</span>
+    <span id="timerDisplay">3:00</span>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showUserTab('browse')">Browse Books</div>
+    <div class="tab" onclick="showUserTab('cart')">🛒 Cart (<span id="cartCount">0</span>)</div>
+  </div>
+
+  <!-- BROWSE -->
+  <div id="browseTab">
+    <div class="search-row">
+      <input type="text" id="searchInput" placeholder="Search by title or author..." oninput="renderBooks()" />
+    </div>
+    <div class="books-grid" id="booksGrid"></div>
+  </div>
+
+  <!-- CART -->
+  <div id="cartTab" style="display:none;">
+    <div class="card">
+      <h2>🛒 Your Cart</h2>
+      <div id="cartItems"><p style="color:#718096;">Your cart is empty.</p></div>
+      <div class="cart-total" id="cartTotal"></div>
+      <button class="btn btn-green" onclick="goToPayment()" id="checkoutBtn" style="display:none;">Proceed to Payment →</button>
+    </div>
+  </div>
+</div>
+
+<!-- =================== PAYMENT PAGE =================== -->
+<div class="page" id="paymentPage">
+  <div class="card">
+    <h2>💳 Payment & Bill</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;flex-wrap:wrap;">
+      <div>
+        <h3 style="margin-bottom:14px;color:#4a5568;">Order Summary</h3>
+        <div class="bill-box" id="billSummary"></div>
+      </div>
+      <div>
+        <h3 style="margin-bottom:14px;color:#4a5568;">Payment Details</h3>
+        <label>Card Number</label>
+        <input type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)" />
+        <label>Name on Card</label>
+        <input type="text" placeholder="Full Name" />
+        <label>Expiry</label>
+        <input type="text" placeholder="MM/YY" maxlength="5" />
+        <label>CVV</label>
+        <input type="password" placeholder="•••" maxlength="3" />
+        <button class="btn btn-green" onclick="confirmPayment()" style="width:100%;margin-top:16px;">✅ Confirm & Pay</button>
+        <button class="btn" onclick="showPage('userPage')" style="background:#718096;width:100%;margin-top:8px;">← Back to Cart</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== ADMIN PAGE =================== -->
+<div class="page" id="adminPage">
+  <div class="tabs">
+    <div class="tab active" onclick="showAdminTab('manage')">📦 Manage Books</div>
+    <div class="tab" onclick="showAdminTab('add')">➕ Add Book</div>
+    <div class="tab" onclick="showAdminTab('orders')">📋 Orders</div>
+  </div>
+
+  <!-- MANAGE -->
+  <div id="manageTab">
+    <div class="card">
+      <h2>📦 Book Inventory</h2>
+      <table>
+        <thead><tr><th>Title</th><th>Author</th><th>Genre</th><th>Price</th><th>Stock</th><th>Action</th></tr></thead>
+        <tbody id="adminBookTable"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADD -->
+  <div id="addTab" style="display:none;">
+    <div class="card" style="max-width:500px;">
+      <h2>➕ Add New Book</h2>
+      <div id="addAlert"></div>
+      <label>Title</label>
+      <input type="text" id="newTitle" placeholder="Book title" />
+      <label>Author</label>
+      <input type="text" id="newAuthor" placeholder="Author name" />
+      <label>Genre</label>
+      <select id="newGenre">
+        <option>Fiction</option><option>Non-Fiction</option><option>Science</option>
+        <option>History</option><option>Technology</option><option>Self-Help</option>
+      </select>
+      <label>Price (₹)</label>
+      <input type="number" id="newPrice" placeholder="299" />
+      <label>Stock</label>
+      <input type="number" id="newStock" placeholder="10" />
+      <button class="btn" onclick="addBook()">Add Book</button>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div id="ordersTab" style="display:none;">
+    <div class="card">
+      <h2>📋 Order History</h2>
+      <div id="ordersTable"><p style="color:#718096;">No orders yet.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- =================== SUCCESS PAGE =================== -->
+<div class="page" id="successPage">
+  <div class="card" style="max-width:500px;margin:0 auto;text-align:center;">
+    <div style="font-size:4rem;margin-bottom:16px;">✅</div>
+    <h2 style="color:#276749;">Payment Successful!</h2>
+    <p style="margin:16px 0;color:#718096;">Thank you for your purchase. Your books will be delivered soon.</p>
+    <div id="receiptBox" class="bill-box" style="text-align:left;margin:20px 0;"></div>
+    <button class="btn" onclick="continueShopping()">Continue Shopping</button>
+  </div>
+</div>
+
+<script>
+// ============ DATA ============
+let books = [
+  { id:1, title:"Clean Code", author:"Robert Martin", genre:"Technology", price:499, stock:5 },
+  { id:2, title:"Atomic Habits", author:"James Clear", genre:"Self-Help", price:349, stock:8 },
+  { id:3, title:"Sapiens", author:"Yuval Harari", genre:"History", price:399, stock:3 },
+  { id:4, title:"The Alchemist", author:"Paulo Coelho", genre:"Fiction", price:199, stock:12 },
+  { id:5, title:"Deep Work", author:"Cal Newport", genre:"Self-Help", price:299, stock:6 },
+  { id:6, title:"Cosmos", author:"Carl Sagan", genre:"Science", price:449, stock:4 },
+];
+let cart = [];
+let orders = [];
+let nextBookId = 7;
+let currentRole = 'user';
+let timerInterval = null;
+let timeLeft = 180;
+let loginAttempts = 3;
+
+const USERS = { user: 'user123', admin: 'admin123' };
+
+// ============ LOGIN ============
+function setRole(role) {
+  currentRole = role;
+  document.getElementById('roleUser').className = 'role-tab' + (role==='user'?' active':'');
+  document.getElementById('roleAdmin').className = 'role-tab' + (role==='admin'?' active':'');
+}
+
+function doLogin() {
+  if (loginAttempts <= 0) {
+    showAlert('loginAlert', 'Account locked. Too many failed attempts.', 'error');
+    return;
+  }
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value.trim();
+  
+  const expectedUser = currentRole === 'admin' ? 'admin' : 'user';
+  const expectedPass = USERS[expectedUser];
+
+  if (u === expectedUser && p === expectedPass) {
+    loginAttempts = 3;
+    document.getElementById('attemptsInfo').textContent = '3 attempts remaining';
+    document.getElementById('navUser').style.display = 'inline-block';
+    document.getElementById('navUser').textContent = `${u} (${currentRole}) — Logout`;
+    if (currentRole === 'admin') {
+      showPage('adminPage');
+      renderAdminTable();
+    } else {
+      showPage('userPage');
+      startTimer();
+      renderBooks();
+    }
+  } else {
+    loginAttempts--;
+    showAlert('loginAlert', `Invalid credentials. ${loginAttempts} attempt(s) remaining.`, 'error');
+    document.getElementById('attemptsInfo').textContent = `${loginAttempts} attempts remaining`;
+    if (loginAttempts <= 0) {
+      document.getElementById('loginUser').disabled = true;
+      document.getElementById('loginPass').disabled = true;
+      showAlert('loginAlert', 'Account locked after 3 failed attempts. Contact admin.', 'error');
+    }
+  }
+}
+
+function logout() {
+  clearInterval(timerInterval);
+  cart = [];
+  timeLeft = 180;
+  loginAttempts = 3;
+  document.getElementById('loginUser').disabled = false;
+  document.getElementById('loginPass').disabled = false;
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+  document.getElementById('attemptsInfo').textContent = '3 attempts remaining';
+  document.getElementById('navUser').style.display = 'none';
+  document.getElementById('loginAlert').innerHTML = '';
+  showPage('loginPage');
+}
+
+// ============ TIMER ============
+function startTimer() {
+  timeLeft = 180;
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    const disp = document.getElementById('timerDisplay');
+    disp.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    disp.className = timeLeft <= 30 ? 'warning' : '';
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      alert('⏰ Session expired! You will be logged out.');
+      logout();
+    }
+  }, 1000);
+}
+
+// ============ BOOKS ============
+function renderBooks() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const grid = document.getElementById('booksGrid');
+  const filtered = books.filter(b =>
+    b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q) || b.genre.toLowerCase().includes(q)
+  );
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p style="color:#718096;grid-column:1/-1;">No books found.</p>';
+    return;
+  }
+  grid.innerHTML = filtered.map(b => `
+    <div class="book-card">
+      <h4>${b.title}</h4>
+      <p>${b.author}</p>
+      <p style="font-size:0.78rem;background:#ebf8ff;display:inline-block;padding:2px 8px;border-radius:10px;color:#2b6cb0;">${b.genre}</p>
+      <div class="price">₹${b.price}</div>
+      <p style="font-size:0.78rem;color:${b.stock>0?'#276749':'#e53e3e'};">${b.stock>0?`In Stock (${b.stock})`:'Out of Stock'}</p>
+      <div class="actions">
+        <button class="btn btn-sm btn-green" onclick="addToCart(${b.id})" ${b.stock===0?'disabled':''}>Add to Cart</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addToCart(id) {
+  const book = books.find(b => b.id === id);
+  if (!book || book.stock === 0) return;
+  const existing = cart.find(c => c.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...book, qty: 1 });
+  }
+  book.stock--;
+  updateCartCount();
+  renderBooks();
+}
+
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = cart.reduce((s,c) => s+c.qty, 0);
+}
+
+function showUserTab(tab) {
+  document.querySelectorAll('#userPage .tab').forEach((t,i) => {
+    t.className = 'tab' + ([['browse','cart'].indexOf(tab) === i] ? ' active' : '');
+  });
+  document.getElementById('browseTab').style.display = tab==='browse' ? '' : 'none';
+  document.getElementById('cartTab').style.display = tab==='cart' ? '' : 'none';
+  if (tab === 'cart') renderCart();
+}
+
+function renderCart() {
+  const el = document.getElementById('cartItems');
+  if (cart.length === 0) {
+    el.innerHTML = '<p style="color:#718096;">Your cart is empty.</p>';
+    document.getElementById('cartTotal').textContent = '';
+    document.getElementById('checkoutBtn').style.display = 'none';
+    return;
+  }
+  const total = cart.reduce((s,c) => s + c.price*c.qty, 0);
+  el.innerHTML = cart.map((c,i) => `
+    <div class="cart-item">
+      <div><b>${c.title}</b><br><small>${c.author} × ${c.qty}</small></div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-weight:700;">₹${c.price * c.qty}</span>
+        <button class="btn btn-danger btn-sm" onclick="removeFromCart(${i})">✕</button>
+      </div>
+    </div>`).join('');
+  document.getElementById('cartTotal').textContent = `Total: ₹${total}`;
+  document.getElementById('checkoutBtn').style.display = 'inline-block';
+}
+
+function removeFromCart(i) {
+  const item = cart[i];
+  const book = books.find(b => b.id === item.id);
+  if (book) book.stock += item.qty;
+  cart.splice(i, 1);
+  updateCartCount();
+  renderCart();
+}
+
+// ============ PAYMENT ============
+function goToPayment() {
+  if (cart.length === 0) return;
+  const subtotal = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  const tax = Math.round(subtotal * 0.18);
+  const shipping = subtotal > 500 ? 0 : 40;
+  const total = subtotal + tax + shipping;
+
+  let rows = cart.map(c => `
+    <div class="bill-row"><span>${c.title} × ${c.qty}</span><span>₹${c.price * c.qty}</span></div>`).join('');
+  rows += `
+    <div class="bill-row"><span>Subtotal</span><span>₹${subtotal}</span></div>
+    <div class="bill-row"><span>GST (18%)</span><span>₹${tax}</span></div>
+    <div class="bill-row"><span>Shipping</span><span>${shipping===0?'FREE':'₹'+shipping}</span></div>
+    <div class="bill-row total"><span>TOTAL</span><span>₹${total}</span></div>`;
+  document.getElementById('billSummary').innerHTML = rows;
+  showPage('paymentPage');
+}
+
+function confirmPayment() {
+  const subtotal = cart.reduce((s,c) => s+c.price*c.qty, 0);
+  const tax = Math.round(subtotal * 0.18);
+  const shipping = subtotal > 500 ? 0 : 40;
+  const total = subtotal + tax + shipping;
+  const orderId = 'ORD' + Date.now().toString().slice(-6);
+
+  orders.push({ id: orderId, items: [...cart], total, date: new Date().toLocaleString() });
+
+  let receipt = `<div class="bill-row"><span><b>Order ID</b></span><span>${orderId}</span></div>`;
+  receipt += cart.map(c => `<div class="bill-row"><span>${c.title} × ${c.qty}</span><span>₹${c.price*c.qty}</span></div>`).join('');
+  receipt += `<div class="bill-row total"><span>TOTAL PAID</span><span>₹${total}</span></div>`;
+  document.getElementById('receiptBox').innerHTML = receipt;
+
+  cart = [];
+  updateCartCount();
+  showPage('successPage');
+}
+
+function continueShopping() {
+  renderBooks();
+  showPage('userPage');
+}
+
+function formatCard(input) {
+  let v = input.value.replace(/\D/g,'').substring(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+
+// ============ ADMIN ============
+function showAdminTab(tab) {
+  ['manage','add','orders'].forEach((t,i) => {
+    document.getElementById(t+'Tab').style.display = t===tab?'':'none';
+    document.querySelectorAll('#adminPage .tab')[i].className = 'tab' + (t===tab?' active':'');
+  });
+  if (tab === 'manage') renderAdminTable();
+  if (tab === 'orders') renderOrders();
+}
+
+function renderAdminTable() {
+  document.getElementById('adminBookTable').innerHTML = books.map(b => `
+    <tr>
+      <td>${b.title}</td>
+      <td>${b.author}</td>
+      <td>${b.genre}</td>
+      <td>₹${b.price}</td>
+      <td>${b.stock}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="removeBook(${b.id})">Remove</button></td>
+    </tr>`).join('');
+}
+
+function removeBook(id) {
+  if (!confirm('Remove this book?')) return;
+  books = books.filter(b => b.id !== id);
+  renderAdminTable();
+}
+
+function addBook() {
+  const title = document.getElementById('newTitle').value.trim();
+  const author = document.getElementById('newAuthor').value.trim();
+  const genre = document.getElementById('newGenre').value;
+  const price = parseInt(document.getElementById('newPrice').value);
+  const stock = parseInt(document.getElementById('newStock').value);
+  if (!title || !author || isNaN(price) || isNaN(stock)) {
+    showAlert('addAlert', 'Please fill all fields correctly.', 'error'); return;
+  }
+  books.push({ id: nextBookId++, title, author, genre, price, stock });
+  showAlert('addAlert', `"${title}" added successfully!`, 'success');
+  ['newTitle','newAuthor','newPrice','newStock'].forEach(id => document.getElementById(id).value = '');
+}
+
+function renderOrders() {
+  const el = document.getElementById('ordersTable');
+  if (orders.length === 0) { el.innerHTML = '<p style="color:#718096;">No orders yet.</p>'; return; }
+  el.innerHTML = `<table>
+    <thead><tr><th>Order ID</th><th>Items</th><th>Total</th><th>Date</th></tr></thead>
+    <tbody>${orders.map(o=>`<tr><td>${o.id}</td><td>${o.items.map(i=>i.title).join(', ')}</td><td>₹${o.total}</td><td>${o.date}</td></tr>`).join('')}</tbody>
+  </table>`;
+}
+
+// ============ UTILS ============
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.className = 'page');
+  document.getElementById(id).className = 'page active';
+}
+
+function showAlert(elId, msg, type) {
+  document.getElementById(elId).innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+  setTimeout(() => { const el = document.getElementById(elId); if(el) el.innerHTML=''; }, 4000);
+}
+</script>
+</body>
+</html>

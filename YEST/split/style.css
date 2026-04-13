@@ -1,0 +1,58 @@
+/* style.css */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; color: #2d3748; }
+
+nav { background: #2b6cb0; color: white; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+nav h1 { font-size: 1.4rem; }
+nav span { font-size: 0.9rem; cursor: pointer; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; }
+
+.page { display: none; padding: 40px 20px; max-width: 900px; margin: 0 auto; }
+.page.active { display: block; }
+
+.card { background: white; border-radius: 12px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.card h2 { margin-bottom: 20px; color: #2b6cb0; }
+
+label { display: block; margin: 12px 0 4px; font-weight: 600; font-size: 0.9rem; }
+input, select { width: 100%; padding: 10px 14px; border: 1.5px solid #cbd5e0; border-radius: 8px; font-size: 0.95rem; transition: border 0.2s; }
+input:focus, select:focus { outline: none; border-color: #2b6cb0; }
+
+.btn { display: inline-block; padding: 10px 24px; background: #2b6cb0; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 0.95rem; margin-top: 14px; }
+.btn:hover { background: #2c5282; }
+.btn-danger { background: #e53e3e; }
+.btn-green { background: #38a169; }
+.btn-sm { padding: 6px 14px; font-size: 0.82rem; margin-top: 0; }
+
+.alert { padding: 10px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.9rem; }
+.alert-error { background: #fed7d7; color: #c53030; }
+.alert-success { background: #c6f6d5; color: #276749; }
+
+.timer-bar { background: #ebf8ff; border: 1.5px solid #bee3f8; border-radius: 8px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+#timerDisplay { font-weight: 700; color: #2b6cb0; font-size: 1.1rem; }
+#timerDisplay.warning { color: #e53e3e; }
+
+.tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+.tab { padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; background: #e2e8f0; color: #4a5568; }
+.tab.active { background: #2b6cb0; color: white; }
+
+.books-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.book-card { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+.book-card h4 { color: #2b6cb0; margin-bottom: 4px; font-size: 0.95rem; }
+.book-card p { font-size: 0.82rem; color: #718096; margin-bottom: 4px; }
+.book-card .price { font-weight: 700; color: #276749; font-size: 1rem; }
+
+.search-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.cart-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+.cart-total { font-size: 1.2rem; font-weight: 700; margin: 16px 0; }
+
+.bill-box { background: #f7fafc; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 20px; }
+.bill-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed #e2e8f0; font-size: 0.93rem; }
+.bill-row.total { font-weight: 700; font-size: 1.1rem; border-bottom: none; padding-top: 12px; color: #2b6cb0; }
+
+.role-tabs { display: flex; gap: 0; margin-bottom: 24px; border-radius: 8px; overflow: hidden; border: 1.5px solid #2b6cb0; }
+.role-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; font-weight: 600; color: #2b6cb0; background: white; }
+.role-tab.active { background: #2b6cb0; color: white; }
+
+.attempts-info { font-size: 0.85rem; color: #718096; margin-top: 8px; }
+table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+th { background: #ebf8ff; color: #2b6cb0; font-weight: 700; }

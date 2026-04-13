@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookStore - Shop</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <h1>📚 BookStore</h1>
+        <span onclick="logout()">Logout</span>
+    </nav>
+
+    <div class="page active">
+        <div class="tabs">
+            <div class="tab active" id="btnBrowse" onclick="showTab('browse')">Browse Books</div>
+            <div class="tab" id="btnCart" onclick="showTab('cart')">🛒 Cart (<span id="cartCount">0</span>)</div>
+        </div>
+
+        <div id="browseTab">
+            <div class="search-row">
+                <input type="text" id="searchInput" placeholder="Search..." oninput="renderBooks()" />
+            </div>
+            <div class="books-grid" id="booksGrid"></div>
+        </div>
+
+        <div id="cartTab" style="display:none;">
+            <div class="card">
+                <h2>🛒 Your Cart</h2>
+                <div id="cartItems"></div>
+                <div class="cart-total" id="cartTotal"></div>
+                <button class="btn btn-green" onclick="location.href='checkout.html'" id="checkoutBtn">Proceed to Payment →</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function renderBooks() {
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('booksGrid');
+            const filtered = books.filter(b => b.title.toLowerCase().includes(q));
+            grid.innerHTML = filtered.map(b => `
+                <div class="book-card">
+                    <h4>${b.title}</h4>
+                    <p>${b.author}</p>
+                    <div class="price">₹${b.price}</div>
+                    <button class="btn btn-sm" onclick="addToCart(${b.id})" ${b.stock===0?'disabled':''}>Add</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const book = books.find(b => b.id === id);
+            if (book.stock > 0) {
+                book.stock--;
+                const inCart = cart.find(c => c.id === id);
+                if (inCart) inCart.qty++; else cart.push({...book, qty: 1});
+                saveData();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            document.getElementById('cartCount').textContent = cart.reduce((a,b)=>a+b.qty, 0);
+            renderBooks();
+        }
+
+        function showTab(t) {
+            document.getElementById('browseTab').style.display = t === 'browse' ? 'block' : 'none';
+            document.getElementById('cartTab').style.display = t === 'cart' ? 'block' : 'none';
+            if(t==='cart') renderCart();
+        }
+
+        function renderCart() {
+            const el = document.getElementById('cartItems');
+            el.innerHTML = cart.map((c, i) => `<div class="cart-item"><span>${c.title} x ${c.qty}</span><span>₹${c.price*c.qty}</span></div>`).join('');
+            document.getElementById('cartTotal').textContent = "Total: ₹" + cart.reduce((a,b)=>a+(b.price*b.qty), 0);
+        }
+
+        updateUI();
+    </script>
+</body>
+</html>

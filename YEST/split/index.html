@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>BookStore - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav><h1>📚 BookStore</h1></nav>
+    <div class="page active" id="loginPage">
+        <div class="card" style="max-width:420px;margin:0 auto;">
+            <h2>🔐 Sign In</h2>
+            <div class="role-tabs">
+                <div class="role-tab active" id="roleUser" onclick="setRole('user')">👤 User</div>
+                <div class="role-tab" id="roleAdmin" onclick="setRole('admin')">🛠 Admin</div>
+            </div>
+            <div id="loginAlert"></div>
+            <label>Username</label>
+            <input type="text" id="loginUser" placeholder="Enter username" />
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Enter password" />
+            <p class="attempts-info" id="attemptsInfo">3 attempts remaining</p>
+            <button class="btn" onclick="doLogin()">Login</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let selectedRole = 'user';
+        function setRole(role) {
+            selectedRole = role;
+            document.getElementById('roleUser').className = 'role-tab' + (role==='user'?' active':'');
+            document.getElementById('roleAdmin').className = 'role-tab' + (role==='admin'?' active':'');
+        }
+
+        function doLogin() {
+            if (loginAttempts <= 0) return showAlert('loginAlert', 'Account locked.', 'error');
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value.trim();
+            
+            if (u === selectedRole && p === USERS[selectedRole]) {
+                localStorage.setItem('currentRole', selectedRole);
+                window.location.href = selectedRole === 'admin' ? 'admin.html' : 'shop.html';
+            } else {
+                loginAttempts--;
+                saveData();
+                document.getElementById('attemptsInfo').textContent = `${loginAttempts} attempts remaining`;
+                showAlert('loginAlert', 'Invalid credentials', 'error');
+            }
+        }
+    </script>
+</body>
+</html>
